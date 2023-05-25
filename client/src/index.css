@@ -1,0 +1,165 @@
+/* TaskEditor.css */
+
+.TaskEditor {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.TaskEditor form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.TaskEditor input[type='text'] {
+  margin-bottom: 10px;
+}
+
+.TaskEditor button {
+  margin-top: 10px;
+}
+
+
+/* TaskManager.css */
+
+.task-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.task-form {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+.task-input {
+  flex-grow: 1;
+  margin-right: 10px;
+  padding: 10px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+}
+
+.submit-btn {
+  padding: 10px 20px;
+  border-radius: 4px;
+  border: none;
+  background-color: #4CAF50;
+  color: white;
+  cursor: pointer;
+}
+
+.submit-btn:hover {
+  background-color: #45a049;
+}
+
+.task-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  padding: 10px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  margin-bottom: 10px;
+}
+
+.edit-link, .delete-btn {
+  margin-left: 10px;
+  padding: 5px 10px;
+  border-radius: 4px;
+  border: none;
+  background-color: #008CBA;
+  color: white;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.delete-btn {
+  background-color: #f44336;
+}
+
+.edit-link:hover, .delete-btn:hover {
+  opacity: 0.8;
+}
+
+
+/* TaskEditor.css */
+
+.task-editor {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.edit-form {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+.edit-label, .edit-input {
+  margin-bottom: 10px;
+}
+
+.edit-input, .completed {
+  padding: 10px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+}
+
+.edit-btn {
+  padding: 10px 20px;
+  border-radius: 4px;
+  border: none;
+  background-color: #4CAF50;
+  color: white;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+.edit-btn:hover {
+  background-color: #45a049;
+}
+
+.back-link {
+  margin-top: 20px;
+  padding: 5px 10px;
+  border-radius: 4px;
+  border: none;
+  background-color: #008CBA;
+  color: white;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.back-link:hover {
+  opacity: 0.8;
+}
+
+.completed {
+  text-decoration: line-through;
+}
+
+.task-name.completed {
+  text-decoration: line-through;
+}
+
+.completed-notice {
+  color: green;
+  font-size: 0.8em;
+  margin-left: 5px;
+}
