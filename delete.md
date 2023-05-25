@@ -1,21 +1,202 @@
-This code is written in Node.js and uses the Express.js framework and Mongoose library to interact with a MongoDB database.
+User
+src\components\TaskEditor.js
+import React, { useState, useEffect } from 'react'
+import axios from 'axios'
+import { Link, useParams, useNavigate } from 'react-router-dom'
 
-Here's a step-by-step breakdown:
+function TaskEditor() {
+ let { id } = useParams()
+  const [task, setTask] = useState(null)
+  const [taskName, setTaskName] = useState('')
+  const [taskCompleted, setTaskCompleted] = useState(false)
+  const navigate = useNavigate() 
+const fetchTask = async () => {
+  try {
+    const {
+      data: { task },
+    } = await axios.get(`/api/v1/tasks/${id}`) // use `id` instead of `params.id`
+    setTask(task)
+    setTaskName(task.name)
+    setTaskCompleted(task.completed)
+    
+  } catch (error) {
+    console.log(error)
+  }
+}
 
-const mongoose = require('mongoose'): Here you're importing mongoose, which is a package used to interact with MongoDB databases in a structured way.
 
-const TaskSchema = new mongoose.Schema({ name: String, completed: Boolean }): Here you're defining a schema. In Mongoose, a schema defines the structure of the documents within a certain collection in your MongoDB database. In this case, you're saying that a "Task" should have a "name", which is a string, and a "completed" status, which is a boolean (true or false).
+  useEffect(() => {
+    fetchTask()
+  }, [])
+const editTask = async (event) => {
+  event.preventDefault()
+  console.log(
+    `Editing task with name ${taskName} and completed status ${taskCompleted}`
+  )
+  try {
+    const {
+      data: { task },
+    } = await axios.patch(`/api/v1/tasks/${id}`, {
+      // use `id` instead of `params.id`
+      name: taskName,
+      completed: taskCompleted,
+    })
+    console.log('Successfully edited task, server responded with:', task)
+    setTask(task)
+    setTaskName(task.name)
+    setTaskCompleted(task.completed)
+    navigate('/')
+  } catch (error) {
+    console.error('An error occurred while editing the task:', error)
+  }
+}
 
-module.exports = mongoose.model('Task', TaskSchema): Here you're creating a model from the schema and exporting it. A model is a constructor that you define and that Mongoose maps to a MongoDB collection. It has methods to save, delete, query, and update the documents in that collection.
+  if (!task) {
+    return <div>Loading...</div>
+  }
 
-const Task = require('../models/Task'): Here you're importing the Task model you've just defined.
+return (
+  <div className='task-editor'>
+    <form onSubmit={editTask} className='edit-form'>
+      <label className='edit-label'>Task ID: {task._id}</label>
+      <input
+        type='text'
+        value={taskName}
+        onChange={(e) => setTaskName(e.target.value)}
+        className='edit-input'
+      />
+      <input
+        type='checkbox'
+        checked={taskCompleted}
+        onChange={(e) => setTaskCompleted(e.target.checked)}
+        className={taskCompleted ? 'completed' : ''}
+      />
+      <button type='submit' className='edit-btn'>
+        Edit
+      </button>
+    </form>
+    <Link to='/' className='back-link'>
+      Back to tasks
+    </Link>
+  </div>
+)
 
-const getAllTasks = (req, res) => { res.send('all items') }: This is an Express.js route handler function. It takes a request (req) and a response (res) object. When a request is made to this endpoint, it will simply respond with the string 'all items'. This is a placeholder, typically you would query the database and send back all tasks in the response.
+}
 
-const createTask = async (req, res) => { const task = await Task.create(req.body) res.status(201).json({ task }) }: This is another Express.js route handler, this time for creating a new task. It's an asynchronous function, meaning it will return a Promise. It uses the Task.create() method to create a new task in the database with the data sent in the request body (req.body). Once the task is created, it responds with a status code of 201 (indicating successful creation) and a JSON object containing the created task.
+export default TaskEditor
 
-This is just the basic idea of what each part does. To actually make these route handlers work, you'll need to integrate them into an Express.js app and set up routes that will trigger them, and also you'll need to connect your application to a MongoDB database using Mongoose. Furthermore, it's important to handle errors properly to build a robust API. This code lacks error handling, and it's crucial to include in a production-grade application.
+src\components\TaskManager.js
 
+import React, { useState, useEffect } from 'react'
+import axios from 'axios'
+import { Link } from 'react-router-dom'
 
+function TaskManager() {
+  const [tasks, setTasks] = useState([])
+  const [loading, setLoading] = useState(false)
+  const [taskName, setTaskName] = useState('')
 
+  const fetchTasks = async () => {
+    setLoading(true)
+    try {
+      const {
+        data: { tasks },
+      } = await axios.get('/api/v1/tasks')
+      setTasks(tasks)
+      
+    } catch (error) {
+      console.log(error)
+    }
+    setLoading(false)
+  }
 
+  useEffect(() => {
+    fetchTasks()
+  }, [])
+
+  const deleteTask = async (id) => {
+    setLoading(true)
+    try {
+      await axios.delete(`/api/v1/tasks/${id}`)
+      fetchTasks()
+    } catch (error) {
+      console.log(error)
+    }
+    setLoading(false)
+  }
+
+  const createTask = async (event) => {
+    event.preventDefault()
+    if (!taskName) return
+    try {
+      await axios.post('/api/v1/tasks', { name: taskName })
+      setTaskName('')
+      fetchTasks()
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  if (loading) {
+    return <div>Loading...</div>
+  }
+
+return (
+  <div className='task-container'>
+    <form onSubmit={createTask} className='task-form'>
+      <input
+        type='text'
+        value={taskName}
+        onChange={(e) => setTaskName(e.target.value)}
+        placeholder='e.g. wash dishes'
+        className='task-input'
+      />
+      <button type='submit' className='submit-btn'>
+        Submit
+      </button>
+    </form>
+    {tasks.map((task) => (
+      <div key={task._id} className='task-item'>
+        <h5 className={task.completed ? 'task-name completed' : 'task-name'}>
+          {task.name}
+        </h5>
+        {task.completed ? (
+          <span className='completed-notice'>Marked as complete</span>
+        ) : null}
+        <Link to={`/tasks/${task._id}`} className='edit-link'>
+          Edit
+        </Link>
+        <button onClick={() => deleteTask(task._id)} className='delete-btn'>
+          Delete
+        </button>
+      </div>
+    ))}
+  </div>
+)
+
+ 
+}
+
+export default TaskManager
+
+src\App.js
+
+import React from 'react'
+import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import TaskManager from './components/TaskManager'
+import TaskEditor from './components/TaskEditor'
+
+function App() {
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path='/' element={<TaskManager />} />
+        <Route path="/tasks/:id" element={<TaskEditor />} />
+      </Routes>
+    </BrowserRouter>
+  )
+}
+
+export default App
+
+now please make this whole app in single page and please write a clean code and if you think there is anything you want to change you can add or delete  for better quality and for single page  mean  for edit i dont have to goto  other page 

@@ -1,15 +1,12 @@
 import React from 'react'
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { BrowserRouter } from 'react-router-dom'
 import TaskManager from './components/TaskManager'
-import TaskEditor from './components/TaskEditor'
+import './App.css'
 
 function App() {
   return (
     <BrowserRouter>
-      <Routes>
-        <Route path='/' element={<TaskManager />} />
-        <Route path="/tasks/:id" element={<TaskEditor />} />
-      </Routes>
+      <TaskManager />
     </BrowserRouter>
   )
 }
